@@ -14,8 +14,10 @@ def unidirectional(levels):
 
 
 def safe(levels, use_problem_dampener=False):
+  if unidirectional(levels) and gradual(levels):
+    return True
   if not use_problem_dampener:
-    return unidirectional(levels) and gradual(levels)
+    return False
   for i in range(len(levels)):
     if safe(levels[:i] + levels[i+1:]):
       return True
