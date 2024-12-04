@@ -35,6 +35,8 @@
     "folders":
     [
         {
+            "name": "Source code",
+            "path": "src",
             "file_exclude_patterns":
             [
                 "*.pyc"
@@ -43,16 +45,26 @@
             [
                 "__pycache__"
             ],
-            "name": "Source code",
-            "path": "src",
         },
         {
             "name": "Puzzle data",
             "path": "data",
         },
         {
+            "name": "Answers",
+            "path": ".submission-history",
+        },
+        {
             "name": "Misc",
             "path": "misc",
+        },
+        {
+            "name": "Project",
+            "path": ".",
+            "folder_exclude_patterns":
+            [
+                "*"
+            ],
         }
     ],
     "settings": {
