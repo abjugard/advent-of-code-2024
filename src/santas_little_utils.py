@@ -1,4 +1,4 @@
-from collections import deque
+from collections import deque, defaultdict
 from santas_little_helpers import alphabet
 
 directions_8 = [('NW', (-1, -1)), ('N', (0, -1)), ('NE', (1, -1)),
@@ -43,8 +43,8 @@ def tesseract_parse(inp, lookup=True, chars=alphabet.upper()):
     return None
 
 
-def build_dict_map(map_data, conv_func=None, key_func=None, criteria=None):
-  the_map = dict()
+def build_dict_map(map_data, conv_func=None, key_func=None, criteria=None, default=None):
+  the_map = dict() if default is None else defaultdict(lambda: default)
   def get_value(c, p):
     return c if conv_func is None else conv_func(c, p)
   def get_key(c, p):
@@ -70,7 +70,7 @@ def map_frame(w, h):
   return
 
 
-def neighbours(p, borders=None, diagonals=False, labels=False):
+def neighbours(p=(0, 0), borders=None, diagonals=False, labels=False):
   def within_borders(p_n, borders):
     if borders is None:
       return True
