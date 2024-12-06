@@ -81,6 +81,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
+.venv-pypy/
 .venv/
 venv/
 ENV/
@@ -175,6 +176,9 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/windows
+
+# JetBrains
+.idea/
 
 # Project settings
 config.json

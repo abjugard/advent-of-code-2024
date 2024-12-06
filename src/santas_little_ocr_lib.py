@@ -62,4 +62,6 @@ def parse_datastructure(inp, lookup):
       raise Exception('unusable grid')
     boundary = (max_x, max_y)
     data = __prepare_grid(inp, lookup)
+  else:
+    raise Exception('unknown data structure')
   return data, boundary

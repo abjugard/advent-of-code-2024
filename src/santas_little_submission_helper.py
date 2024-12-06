@@ -1,15 +1,14 @@
-import json, re, importlib, sys, os
+import json, re, importlib, sys
 from time import sleep
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Callable, Iterator
 from santas_little_helpers import aoc_root, config
 from io import StringIO
 from math import ceil
 
 aoc_submission_history = aoc_root / '.submission-history'
-aoc_response_time_re = re.compile(r'You have ((?P<minutes>[\d]+)m |)(?P<seconds>[\d]+)s left to wait.')
-standard_answer_re = re.compile(r'([\d]{4}-[\d]{2}-[\d]{2}) star ([\d]{1}) = (.+)')
+aoc_response_time_re = re.compile(r'You have ((?P<minutes>\d+)m |)(?P<seconds>\d+)s left to wait.')
+standard_answer_re = re.compile(r'(\d{4}-\d{2}-\d{2}) star (\d) = (.+)')
 
 
 def get_submission_history(today: date, level: int):
@@ -38,7 +37,8 @@ def __handle_response__(today: date, answer, level, submission_history, text):
   new_entry = {
     'timestamp': datetime.now().isoformat()
   }
-  
+
+  unlock_time = None
   if 'gave an answer too recently' in text:
     match = aoc_response_time_re.search(text)
     minutes = match.group('minutes')
@@ -90,10 +90,9 @@ def __handle_response__(today: date, answer, level, submission_history, text):
     wait_until(unlock_time)
     return submit_answer(today, answer, level)
   else:
-    # NOTE: (today.day, level) == (25, 1) does not work here
     if new_entry['success'] and today.day == 25 and level == 1:
-      print('AoC complete, autosubmitting 25 part 2')
-      autosubmission_success = submit_answer(today, 'Merry christmas team!', level=2, force=True)
+      print('AoC complete, auto-submitting 25 part 2')
+      submit_answer(today, 'Merry christmas team!', level=2, force=True)
     return new_entry['success']
 
 
@@ -107,7 +106,7 @@ def import_requests():
   return request, codes, BeautifulSoup
 
 
-def submit_answer(today: date, answer, level: int = 1, force = False) -> None:
+def submit_answer(today: date, answer, level: int = 1, force = False) -> bool | None:
   if not force:
     if type(answer) not in [str, int]:
       print(f'Ignoring answer of type {type(answer)}, submission must be str or int')
@@ -137,14 +136,14 @@ def submit_answer(today: date, answer, level: int = 1, force = False) -> None:
         unlock_time = datetime.fromisoformat(last['unlock_time'])
         wait_until(unlock_time)
 
-  request, status_codes, BeautifulSoup = import_requests()
+  request, status_codes, beautiful_soup = import_requests()
   url = f'https://adventofcode.com/{today.year}/day/{today.day}/answer'
   payload = {'level': level, 'answer': answer}
   res = request('POST', url, cookies=config, data=payload)
   with (aoc_submission_history / f'day{today.day:02}.{str(level)}-last_response.html').open('wb') as f:
     f.write(res.content)
 
-  soup = BeautifulSoup(res.content, 'html.parser')
+  soup = beautiful_soup(res.content, 'html.parser')
   content = soup.find_all('article')[0]
   try:
     return __handle_response__(today, answer, level, submission_history, content.text)
@@ -187,7 +186,7 @@ def submit_answers(theday, func):
       func()
       restore_stdout()
       __submit_output__(theday, stream.getvalue())
-    except Exception as e:
+    except Exception:
       restore_stdout()
       print(f'Day {theday} failed to execute')
       return

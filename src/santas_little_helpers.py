@@ -2,14 +2,14 @@ import json, re, importlib, sys, os
 from time import time
 from datetime import date
 from pathlib import Path
-from typing import Callable, Iterator
+from typing import Callable, Iterator, Any
 from functools import reduce
-from itertools import product
+from string import ascii_lowercase, ascii_uppercase
 
 setup_start = time()
 
-alphabet = 'abcdefghijklmnopqrstuvwxyz'
-ALPHABET = alphabet.upper()
+alphabet = ascii_lowercase
+ALPHABET = ascii_uppercase
 full_alphabet = alphabet + ALPHABET
 
 base_ops = [('replace', (r'\n', ''))]
@@ -17,8 +17,8 @@ base_ops = [('replace', (r'\n', ''))]
 aoc_root = Path(__file__).resolve().parent.parent
 aoc_data = aoc_root / 'data'
 
-with (aoc_root / 'config.json').open('r') as f:
-  config = json.load(f)
+with (aoc_root / 'config.json').open('r') as config_file:
+  config = json.load(config_file)
 
 
 def day(year: int, theday: int) -> date:
@@ -66,20 +66,22 @@ def import_requests():
   return request, codes
 
 
-def get_data(today: date = date.today(), ops: list = base_ops, groups: bool = False) -> Iterator:
+def get_data(today: date = date.today(), ops=None, groups: bool = False) -> Iterator:
+  if ops is None:
+    ops = []
   if not aoc_data.exists():
     aoc_data.mkdir()
 
-  def save_daily_input(today: date) -> None:
+  def save_daily_input() -> None:
     request, status_codes = import_requests()
     url = f'https://adventofcode.com/{today.year}/day/{today.day}/input'
     res = request('GET', url, cookies=config)
     if res.status_code != status_codes.ok:
       print(f'Day {today.day} not available yet')
       sys.exit(0)
-    with file_path.open('wb') as f:
+    with file_path.open('wb') as new_input_file:
       for chunk in res.iter_content(chunk_size=128):
-        f.write(chunk)
+        new_input_file.write(chunk)
 
   file_root = aoc_data / str(today.year)
   if not file_root.exists():
@@ -88,15 +90,15 @@ def get_data(today: date = date.today(), ops: list = base_ops, groups: bool = Fa
   file_path = file_root / f'day{today.day:02}.txt'
   if not file_path.exists():
     print(f'Data for day {today.day} not available, downloading!')
-    save_daily_input(today)
+    save_daily_input()
 
   op_chain = list(build_op_chain(ops))
-  with file_path.open() as f:
-    lines = f.read().rstrip().split('\n\n' if groups else '\n')
+  with file_path.open() as input_file:
+    lines = input_file.read().rstrip().split('\n\n' if groups else '\n')
   if groups:
     def format_group(group_lines):
-      for line in group_lines.split('\n'):
-        yield format_line(line, op_chain)
+      for group_line in group_lines.split('\n'):
+        yield format_line(group_line, op_chain)
     for group in lines:
       yield format_group(group)
   else:
@@ -114,7 +116,7 @@ def time_fmt(delta: float) -> (float, str):
   return 1, 'seconds'
 
 
-def execute(func: Callable) -> float:
+def execute(func: Callable) -> tuple[Any, float]:
   start = time()
   result = func()
   return result, time() - start
@@ -136,6 +138,7 @@ def execute_multiple(func: Callable, times) -> [float]:
 
 
 def timed(func: Callable, start=None) -> None:
+  setup = 0
   if setup_start is not None:
     setup = time() - setup_start
   if start is not None:
@@ -184,13 +187,13 @@ def run_all():
   for file in sorted(Path('.').glob('day[!X]?-*.py')):
     try:
       import_start = time()
-      day = importlib.import_module(file.name[:-3])
+      day_module = importlib.import_module(file.name[:-3])
     except Exception as e:
       print(f'Failed to import \'{file.name}\': {e}', file=sys.stderr)
       print()
       continue
     print(f'Running \'{file.name}\':')
-    timed(day.main, import_start)
+    timed(day_module.main, import_start)
     print()
 
 

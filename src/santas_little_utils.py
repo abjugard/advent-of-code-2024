@@ -77,31 +77,31 @@ def build_dict_map(map_data, conv_func=None, key_func=None, criteria=None, defau
 
 def map_frame(w, h):
   for x in range(w):
-    yield (x, -1)
-    yield (x, w)
+    yield x, -1
+    yield x, w
   for y in range(h):
-    yield (-1, y)
-    yield (h, y)
+    yield -1, y
+    yield h, y
   return
 
 
 def neighbours(p=(0, 0), borders=None, diagonals=False, labels=False):
-  def within_borders(p_n, borders):
+  def within_borders(pt):
     if borders is None:
       return True
     elif isinstance(borders, dict):
-      return p_n in borders
+      return pt in borders
     elif isinstance(borders, set):
-      return p_n in borders
+      return pt in borders
     elif isinstance(borders, list):
-      x_n, y_n = p_n
+      x_n, y_n = pt
       h = len(borders)
       return h > 0 and 0 <= y_n < h and 0 <= x_n < len(borders[0])
     raise Exception(f'unknown datastructure: {type(borders)}')
   x, y = p
   for label, (xd, yd) in directions_8 if diagonals else directions_4:
     p_n = x + xd, y + yd
-    if within_borders(p_n, borders):
+    if within_borders(p_n):
       yield (label, p_n) if labels else p_n
 
 
