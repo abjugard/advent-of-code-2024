@@ -1,11 +1,26 @@
-from collections import deque, defaultdict
+from collections import deque, defaultdict, namedtuple
 from santas_little_helpers import alphabet
+
+Turn = namedtuple('Turn', ['l', 'r'])
 
 directions_8 = [('NW', (-1, -1)), ('N', (0, -1)), ('NE', (1, -1)),
                 ('W',  (-1,  0)),                 ('E',  (1,  0)),
                 ('SW', (-1,  1)), ('S', (0,  1)), ('SE', (1,  1))]
 
 directions_4 = [('N', (0, -1)), ('W', (-1, 0)), ('E', (1, 0)), ('S', (0, 1))]
+
+direction_arrow_lookup = {
+  '^': 'N',
+  '>': 'E',
+  '<': 'W',
+  'v': 'S',
+}
+turn = {
+  'N': Turn('W', 'E'),
+  'E': Turn('N', 'S'),
+  'W': Turn('S', 'N'),
+  'S': Turn('E', 'W'),
+}
 
 
 def get_iterator(variable):
