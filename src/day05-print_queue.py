@@ -12,9 +12,8 @@ def apply_rules(job, rules):
       continue
     if rule != [p for p in job if p in rule]:
       l, r = rule
-      temp_job = [p for p in job if p != l]
-      temp_job.insert(temp_job.index(r), l)
-      job = temp_job
+      job = [p for p in job if p != l]
+      job.insert(job.index(r), l)
       passes = False
   return passes, job
 
@@ -31,11 +30,11 @@ def calculate_checksums(rules, jobs):
 
 
 def parse(line):
-  return list(map(int, re.split(r'\||,', line)))
+  return list(map(int, re.split(r'[|,]', line)))
 
 
 def main():
-  rules, jobs = get_data(today, [('func', parse)], groups=True)
+  rules, jobs = get_data(today, parse, groups=True)
   star1, star2 = calculate_checksums(sorted(rules), jobs)
   print(f'{today} star 1 = {star1}')
   print(f'{today} star 2 = {star2}')

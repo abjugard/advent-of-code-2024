@@ -29,7 +29,7 @@ def parse(line):
 
 
 def main():
-  reports = list(get_data(today, [('func', parse)]))
+  reports = list(get_data(today, parse))
   print(f'{today} star 1 = {sum(safe(report) for report in reports)}')
   print(f'{today} star 2 = {sum(safe(report, use_problem_dampener=True) for report in reports)}')
 

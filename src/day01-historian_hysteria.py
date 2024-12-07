@@ -20,7 +20,7 @@ def parse(line):
 
 
 def main():
-  location_id_lists = transpose(get_data(today, [('func', parse)]))
+  location_id_lists = transpose(get_data(today, parse))
   print(f'{today} star 1 = {part1(*location_id_lists)}')
   print(f'{today} star 2 = {part2(*location_id_lists)}')
 
