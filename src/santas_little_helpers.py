@@ -85,11 +85,7 @@ def get_data(today: date = date.today(), ops=None, groups: bool = False) -> Iter
       for chunk in res.iter_content(chunk_size=128):
         new_input_file.write(chunk)
 
-  file_root = aoc_data / str(today.year)
-  if not file_root.exists():
-    file_root.mkdir()
-
-  file_path = file_root / f'day{today.day:02}.txt'
+  file_path = aoc_data / f'{today.year}-{today.day:02}.txt'
   if not file_path.exists():
     print(f'Data for day {today.day} not available, downloading!')
     save_daily_input()
