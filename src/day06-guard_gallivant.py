@@ -1,33 +1,30 @@
 from santas_little_helpers import day, get_data, timed
-from santas_little_classes import Point
-from santas_little_utils import build_dict_map, direction_arrow_lookup, turn
+from santas_little_classes import Point, Heading
+from santas_little_utils import build_dict_map
 
 today = day(2024, 6)
 
 
 def guard_path(the_map):
-  start = direction = None
+  start = heading = None
   for p, c in the_map.items():
     if c in '^><v':
       start = p
       the_map[p] = '.'
-      direction = direction_arrow_lookup[c]
+      heading = Heading(c)
 
-  p = Point(*start)
-  seen, visited = set(), set()
-  terminated = False
-
+  p, seen = Point(*start), set()
   while True:
-    seen.add((p.t, direction))
-    visited.add(p.t)
-    n = p.next(direction)
-    if n.t not in the_map or terminated:
-      return len(visited), visited, terminated
+    seen.add((p.t, heading))
+    n = p.next(heading)
+    if n.t not in the_map:
+      return { p for p, _ in seen }, 0
     while the_map[n.t] == '#':
-      direction = turn[direction].r
-      n = p.next(direction)
+      heading.turn_r()
+      n = p.next(heading)
     p = n
-    terminated = (p.t, direction) in seen
+    if (p.t, heading) in seen:
+      return None, 1
 
 
 def find_loops(the_map, path):
@@ -36,15 +33,15 @@ def find_loops(the_map, path):
     if c == '.' and p in path:
       test = the_map.copy()
       test[p] = '#'
-      _, _, terminated = guard_path(test)
+      _, terminated = guard_path(test)
       count += terminated
   return count
 
 
 def main():
   the_map, _ = build_dict_map(get_data(today))
-  star1, path, _ = guard_path(the_map.copy())
-  print(f'{today} star 1 = {star1}')
+  path, _ = guard_path(the_map.copy())
+  print(f'{today} star 1 = {len(path)}')
   print(f'{today} star 2 = {find_loops(the_map, path)}')
 
 

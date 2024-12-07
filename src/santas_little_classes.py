@@ -1,5 +1,13 @@
 from dataclasses import dataclass
 from types import SimpleNamespace
+from santas_little_utils import direction_arrow_lookup
+
+turn = {
+  'N': { 'l':'W', 'r': 'E' },
+  'E': { 'l':'N', 'r': 'S' },
+  'W': { 'l':'S', 'r': 'N' },
+  'S': { 'l':'E', 'r': 'W' },
+}
 
 
 class NestedNamespace(SimpleNamespace):
@@ -24,12 +32,47 @@ class NestedNamespace(SimpleNamespace):
 
 
 @dataclass
+class Heading:
+  def __init__(self, direction):
+    if direction in direction_arrow_lookup:
+      self.direction = direction_arrow_lookup[direction]
+    elif direction.upper() in turn:
+      self.direction = direction.upper()
+    else:
+      raise ValueError('Invalid direction')
+
+  def __eq__(self, other):
+    return self.direction == other.direction
+  def __hash__(self):
+    return ord(self.direction)
+
+  def turn_l(self):
+    self.direction = self.get_l()
+  def turn_r(self):
+    self.direction = self.get_r()
+
+  @property
+  def l(self):
+    return Heading(self.get_l())
+  @property
+  def r(self):
+    return Heading(self.get_r())
+
+  def get_l(self):
+    return turn[self.direction]['l']
+  def get_r(self):
+    return turn[self.direction]['r']
+
+
+@dataclass
 class Point:
   x: int = 0
   y: int = 0
 
 
   def __add__(self, other):
+    if isinstance(other, Heading):
+      return self.next(other)
     return Point(self.x + other.x, self.y + other.y)
   def __sub__(self, other):
     return Point(self.x - other.x, self.y - other.y)
