@@ -23,29 +23,6 @@ class NestedNamespace(SimpleNamespace):
     return self.__dict__
 
 
-class NestedNamespace2(SimpleNamespace):
-  default = None
-  def __init__(self, dictionary, default=None, **kwargs):
-    self.default = default
-    super().__init__(**kwargs)
-    for key, value in dictionary.items():
-      self.__setattr__(key, self.__get_entry__(value))
-
-  def __getattr__(self, key):
-    return self.default
-
-  def __get_entry__(self, value):
-    if isinstance(value, dict):
-      return NestedNamespace(value, default=self.default)
-    elif isinstance(value, list):
-      return [self.__get_entry__(item) for item in value]
-    else:
-      return value
-
-  def to_dict(self):
-    return self.__dict__
-
-
 @dataclass
 class Point:
   x: int = 0
@@ -89,6 +66,8 @@ class Point:
   def nw (self): return Point(self.x-1, self.y-1)
 
   def next(self, d):
+    if isinstance(d, Heading):
+      return self.next(d.direction)
     match d:
       case 'N': return self.n
       case 'E': return self.e
@@ -98,7 +77,7 @@ class Point:
 
   @property
   def t(self):
-    return (self.x, self.y)
+    return self.x, self.y
   @property
   def copy(self):
     return Point(self.x, self.y)
@@ -106,7 +85,7 @@ class Point:
 
   @property
   def direct_neighbours(self):
-    return set([self.n, self.e, self.s, self.w])
+    return {self.n, self.e, self.s, self.w}
   @property
   def neighbours(self):
     return [self.nw, self.n, self.ne,

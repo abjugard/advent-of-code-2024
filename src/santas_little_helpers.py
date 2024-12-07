@@ -53,6 +53,8 @@ def build_op(op, args):
 
 
 def build_op_chain(ops):
+  if isinstance(ops, Callable):
+    ops = [('func', ops)]
   for op, args in ops:
     yield build_op(op, args)
 
