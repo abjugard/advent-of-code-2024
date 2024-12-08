@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from types import SimpleNamespace
+from typing import Tuple
+
 from santas_little_utils import direction_arrow_lookup
 
 turn = {
@@ -71,10 +73,14 @@ class Point:
 
 
   def __add__(self, other):
+    if isinstance(other, Tuple):
+      return Point(self.x + other[0], self.y + other[1])
     if isinstance(other, Heading):
       return self.next(other)
     return Point(self.x + other.x, self.y + other.y)
   def __sub__(self, other):
+    if isinstance(other, Tuple):
+      return Point(self.x - other[0], self.y - other[1])
     return Point(self.x - other.x, self.y - other.y)
   def __eq__(self, other):
     return self.x == other.x and self.y == other.y
@@ -89,6 +95,8 @@ class Point:
   def __iter__(self):
     yield self.x
     yield self.y
+  def __str__(self):
+    return f'({self.x}, {self.y})'
 
 
   @property
@@ -140,6 +148,10 @@ class Point:
     self.x += other.x * multiplier
     self.y += other.y * multiplier
     return self
+
+
+  def offset_from(self, other):
+    return self.x-other.x, self.y-other.y
 
 
   def distance_to(self, other):
