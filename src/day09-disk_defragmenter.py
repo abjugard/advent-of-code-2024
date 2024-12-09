@@ -49,13 +49,26 @@ def move(filesystem, target_id, target_size):
   return new_fs
 
 
+def simplify(filesystem, files):
+  smallest = min(size for _, size in files)
+  for locked_idx, (k, size, file_idx) in enumerate(filesystem):
+    if k == 'space' and size >= smallest:
+      return filesystem[:locked_idx], filesystem[locked_idx:]
+
+
 def compress_files(filesystem):
   files = [(idx, size) for k, size, idx in filesystem[::-1] if k == 'file']
-  for file in files:
+  seen, locked = set(), []
+  for idx, file in enumerate(files):
+    if file[0] in seen:
+      continue
     filesystem = move(filesystem, *file)
+    done, filesystem = simplify(filesystem, files[idx:])
+    seen.update(file_idx for _, _, file_idx in done)
+    locked += done
 
   bi = checksum = 0
-  for _, n, file_idx in filesystem:
+  for _, n, file_idx in locked + filesystem:
     for _ in range(n):
       checksum += bi*(file_idx or 0)
       bi += 1
