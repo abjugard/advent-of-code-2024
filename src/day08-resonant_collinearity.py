@@ -7,7 +7,7 @@ today = day(2024, 8)
 
 
 def locate_antinodes(the_map):
-  d, d_cand, p1_l, p2_l = dict(), dict(), set(), set()
+  d, d_cand, part1_loc, part2_loc = dict(), dict(), set(), set()
   for p, c in the_map.items():
     if c != '.':
       if c not in d:
@@ -17,24 +17,24 @@ def locate_antinodes(the_map):
       d_cand[c].remove(p)
 
   for c, ps in d.items():
-    p2_l.update(ps)
+    part2_loc.update(ps)
     cand = d_cand[c]
     for p1, p2 in product(ps, repeat=2):
       offset = p2.offset_from(p1)
 
       p1 -= offset
       if p1.t in cand:
-        p1_l.add(p1)
+        part1_loc.add(p1)
       while (p1 := p1-offset).t in cand:
-        p2_l.add(p1)
+        part2_loc.add(p1)
 
       p2 += offset
       if p2.t in cand:
-        p1_l.add(p2)
+        part1_loc.add(p2)
       while (p2 := p2+offset).t in cand:
-        p2_l.add(p2)
+        part2_loc.add(p2)
 
-  return len(p1_l), len(p1_l | p2_l)
+  return len(part1_loc), len(part1_loc | part2_loc)
 
 
 def main():
