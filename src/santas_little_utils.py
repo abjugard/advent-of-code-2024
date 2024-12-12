@@ -8,6 +8,7 @@ directions_8 = [('NW', (-1, -1)), ('N', (0, -1)), ('NE', (1, -1)),
                 ('SW', (-1,  1)), ('S', (0,  1)), ('SE', (1,  1))]
 
 directions_4 = [('N', (0, -1)), ('W', (-1, 0)), ('E', (1, 0)), ('S', (0, 1))]
+directions_x = [d for d in directions_8 if d not in directions_4]
 
 direction_arrow_lookup = {
   '^': 'N',
@@ -85,7 +86,7 @@ def map_frame(w, h):
   return
 
 
-def neighbours(p=(0, 0), borders=None, diagonals=False, labels=False):
+def neighbours(p=(0, 0), borders=None, diagonals=False, normal=True, labels=False):
   def within_borders(pt):
     if borders is None:
       return True
@@ -97,9 +98,16 @@ def neighbours(p=(0, 0), borders=None, diagonals=False, labels=False):
       x_n, y_n = pt
       h = len(borders)
       return h > 0 and 0 <= y_n < h and 0 <= x_n < len(borders[0])
+    elif hasattr(borders, '__call__'):
+      return borders(pt)
     raise Exception(f'unknown datastructure: {type(borders)}')
   x, y = p
-  for label, (xd, yd) in directions_8 if diagonals else directions_4:
+  dirs = directions_4
+  if diagonals:
+    dirs = directions_8
+  if not normal:
+    dirs = directions_x
+  for label, (xd, yd) in dirs:
     p_n = x + xd, y + yd
     if within_borders(p_n):
       yield (label, p_n) if labels else p_n
