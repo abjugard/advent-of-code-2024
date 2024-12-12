@@ -4,10 +4,10 @@ from types import SimpleNamespace
 from santas_little_utils import direction_arrow_lookup
 
 turn = {
-  'N': { 'l':'W', 'r': 'E' },
-  'E': { 'l':'N', 'r': 'S' },
-  'W': { 'l':'S', 'r': 'N' },
-  'S': { 'l':'E', 'r': 'W' },
+  'N': { 'l':'W', 'r': 'E', 'u': 'S' },
+  'E': { 'l':'N', 'r': 'S', 'u': 'W' },
+  'W': { 'l':'S', 'r': 'N', 'u': 'E' },
+  'S': { 'l':'E', 'r': 'W', 'u': 'N' },
 }
 
 
@@ -34,7 +34,7 @@ class NestedNamespace(SimpleNamespace):
 
 @dataclass
 class Heading:
-  def __init__(self, direction):
+  def __init__(self, direction='N'):
     if direction in direction_arrow_lookup:
       self.direction = direction_arrow_lookup[direction]
     elif direction.upper() in turn:
@@ -46,11 +46,15 @@ class Heading:
     return self.direction == other.direction
   def __hash__(self):
     return ord(self.direction)
+  def __str__(self):
+    return self.direction
 
   def turn_l(self):
     self.direction = self.get_l()
   def turn_r(self):
     self.direction = self.get_r()
+  def u_turn(self):
+    self.direction = self.get_u()
 
   @property
   def l(self):
@@ -58,11 +62,16 @@ class Heading:
   @property
   def r(self):
     return Heading(self.get_r())
+  @property
+  def u(self):
+    return Heading(self.get_u())
 
   def get_l(self):
     return turn[self.direction]['l']
   def get_r(self):
     return turn[self.direction]['r']
+  def get_u(self):
+    return turn[self.direction]['u']
 
 
 @dataclass
