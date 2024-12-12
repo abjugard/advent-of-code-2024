@@ -59,6 +59,38 @@ def tesseract_parse(inp, lookup=True, chars=alphabet.upper()):
     return None
 
 
+def debug_map(the_map):
+  keys = []
+  values = lambda p: '#' if p in keys else '.'
+  if isinstance(the_map, dict):
+    keys = the_map.keys()
+    values = lambda p: the_map[p]
+  elif isinstance(the_map, list):
+    keys = the_map
+  elif isinstance(the_map, set):
+    keys = the_map
+
+  max_h, max_w, min_h, min_w = find_bounds(keys)
+
+  for y in range(min_h-1, max_h+2):
+    line = ''
+    for x in range(min_w-1, max_w+2):
+      line += values((x, y))
+    print(line)
+  print()
+
+
+def find_bounds(points):
+  min_w, max_w, min_h, max_h = 1_000_000, 0, 1_000_000, 0
+  for x, y in points:
+    min_w = min(min_w, x)
+    max_w = max(max_w, x)
+    min_h = min(min_h, y)
+    max_h = max(max_h, y)
+  # print(min_w, max_w, min_h, max_h)
+  return max_h, max_w, min_h, min_w
+
+
 def build_dict_map(map_data, conv_func=None, key_func=None, criteria=None, default=None):
   the_map = dict() if default is None else defaultdict(lambda: default)
   def get_value(c, p):
