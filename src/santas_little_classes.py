@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from types import SimpleNamespace
-from typing import Tuple
 
 from santas_little_utils import direction_arrow_lookup
 
@@ -73,16 +72,21 @@ class Point:
 
 
   def __add__(self, other):
-    if isinstance(other, Tuple):
-      return Point(self.x + other[0], self.y + other[1])
+    if isinstance(other, tuple):
+      ox, oy, *_ = other
+      return Point(self.x + ox, self.y + oy)
     if isinstance(other, Heading):
       return self.next(other)
     return Point(self.x + other.x, self.y + other.y)
   def __sub__(self, other):
-    if isinstance(other, Tuple):
-      return Point(self.x - other[0], self.y - other[1])
+    if isinstance(other, tuple):
+      ox, oy, *_ = other
+      return Point(self.x - ox, self.y - oy)
     return Point(self.x - other.x, self.y - other.y)
   def __eq__(self, other):
+    if isinstance(other, tuple):
+      ox, oy, *_ = other
+      return self.x == ox and self.y == oy
     return self.x == other.x and self.y == other.y
   def __lt__(self, other):
     if self.y < other.y:
