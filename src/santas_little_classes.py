@@ -49,29 +49,24 @@ class Heading:
   def __str__(self):
     return self.direction
 
-  def turn_l(self):
-    self.direction = self.get_l()
-  def turn_r(self):
-    self.direction = self.get_r()
-  def u_turn(self):
-    self.direction = self.get_u()
+  @property
+  def char(self):
+    return '^><v'['NEWS'.index(self.direction)]
+
+  def turn_l(self): self.direction = self.__get_l__()
+  def turn_r(self): self.direction = self.__get_r__()
+  def u_turn(self): self.direction = self.__get_u__()
 
   @property
-  def l(self):
-    return Heading(self.get_l())
+  def l(self): return Heading(self.__get_l__())
   @property
-  def r(self):
-    return Heading(self.get_r())
+  def r(self): return Heading(self.__get_r__())
   @property
-  def u(self):
-    return Heading(self.get_u())
+  def u(self): return Heading(self.__get_u__())
 
-  def get_l(self):
-    return turn[self.direction]['l']
-  def get_r(self):
-    return turn[self.direction]['r']
-  def get_u(self):
-    return turn[self.direction]['u']
+  def __get_l__(self): return turn[self.direction]['l']
+  def __get_r__(self): return turn[self.direction]['r']
+  def __get_u__(self): return turn[self.direction]['u']
 
 
 @dataclass
