@@ -166,9 +166,14 @@ class Point:
             self.sw, self.s, self.se]
 
 
-  def move(self, other, multiplier=1):
-    self.x += other.x * multiplier
-    self.y += other.y * multiplier
+  def move(self, other, multiplier=1, wrap=None):
+    if wrap is not None:
+      xw, yw = wrap
+      self.x = (self.x + other.x * multiplier) % xw
+      self.y = (self.y + other.y * multiplier) % yw
+    else:
+      self.x += other.x * multiplier
+      self.y += other.y * multiplier
     return self
 
 
