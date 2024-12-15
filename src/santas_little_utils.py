@@ -59,12 +59,12 @@ def tesseract_parse(inp, lookup=True, chars=alphabet.upper()):
     return None
 
 
-def debug_map(the_map):
+def debug_map(the_map, inform=None, cursor=None):
   keys = []
   values = lambda p: '#' if p in keys else '.'
   if isinstance(the_map, dict):
     keys = the_map.keys()
-    values = lambda p: the_map[p]
+    values = lambda p: the_map[p] if p in the_map else '#'
   elif isinstance(the_map, list):
     keys = the_map
   elif isinstance(the_map, set):
@@ -75,7 +75,19 @@ def debug_map(the_map):
   for y in range(min_h-1, max_h+2):
     line = ''
     for x in range(min_w-1, max_w+2):
-      line += values((x, y))
+      if y == min_h-1 and inform is not None and x == inform[0]:
+        line += 'v'
+      else:
+        nv = values((x, y))
+        if inform is not None and nv == '.' and x == inform[0]:
+          nv = '|'
+          if y == inform[1] and cursor is not None:
+            nv = str(cursor)
+        if inform is not None and nv == '.' and y == inform[1]:
+          nv = '-'
+        line += nv
+    if inform is not None and y == inform[1]:
+      line += ' <'
     print(line)
   print()
 
