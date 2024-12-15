@@ -36,8 +36,8 @@ def move_advanced(the_map, bot, heading):
   while True:
     for p in list(to_check):
       c = the_map[p.t]
-      if   c == '[': to_check.add(p.e)
-      elif c == ']': to_check.add(p.w)
+      if   c == '[': to_check.add(p.east)
+      elif c == ']': to_check.add(p.west)
       elif c == '.': to_check.remove(p)
       elif c == '#':
         return the_map, bot

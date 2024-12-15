@@ -129,6 +129,15 @@ class Point:
   @property
   def nw (self): return Point(self.x-1, self.y-1)
 
+  north = n
+  northeast = ne
+  east = e
+  southeast = se
+  south = s
+  southwest = sw
+  west = w
+  northwest = nw
+
   def next(self, d):
     if isinstance(d, Heading):
       return self.next(d.direction)
