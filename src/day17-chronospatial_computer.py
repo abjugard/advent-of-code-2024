@@ -42,21 +42,9 @@ def run_vm(a, program):
   return out
 
 
-def run_vm_optimized(a):
-  out = []
-  while True:
-    b = (a % 8) ^ 1
-    b ^= (a // 2**b) ^ 4
-    a //= 8
-    val = b % 8
-    out.append(val)
-    if a == 0:
-      return out
-
-
 def find_quine(program):
   a = pow(8, len(program)-1)
-  while (out := run_vm_optimized(a)) != program:
+  while (out := run_vm(a, program)) != program:
     for idx, o in reversed(list(enumerate(out))):
       if o != program[idx]:
         a += 8**idx
@@ -69,7 +57,7 @@ def main():
   register_a = int(next(registers))
   program = list(ints(next(program), ','))
 
-  print(f'{today} star 1 = {",".join(map(str, run_vm_optimized(register_a)))}')
+  print(f'{today} star 1 = {",".join(map(str, run_vm(register_a, program)))}')
   print(f'{today} star 2 = {find_quine(program)}')
 
 
