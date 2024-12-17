@@ -1,0 +1,19 @@
+2,4    b  = a % 8
+1,1    b ^= 1
+7,5    c  = a // 2**b
+4,6    b ^= c
+0,3    a  = a // 8
+1,4    b ^= 4
+5,5    out(b % 8)
+3,0    if a == 0: return out
+
+simplified:
+
+while True:
+  b = (a % 8) ^ 1
+  b ^= (a // 2**b) ^ 4
+  a //= 8
+  val = b % 8
+  out.append(val)
+  if a == 0:
+    return out

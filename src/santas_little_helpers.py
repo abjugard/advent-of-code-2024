@@ -40,6 +40,12 @@ def build_op(op, args):
     return lambda line: matcher.sub(args[1], line)
   elif op == 'split':
     return lambda line: line.split(args)
+  elif op == 'skip':
+    return lambda line: line[args:]
+  elif op == 'take':
+    return lambda line: line[:args]
+  elif op == 'elem':
+    return lambda line: line[args]
   elif op == 'translate':
     if isinstance(args, dict):
       translations = str.maketrans(args)
