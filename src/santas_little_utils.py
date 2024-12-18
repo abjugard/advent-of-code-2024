@@ -1,4 +1,6 @@
 from collections import deque, defaultdict, namedtuple
+from itertools import product
+
 from santas_little_helpers import alphabet
 
 Turn = namedtuple('Turn', ['l', 'r'])
@@ -130,10 +132,18 @@ def map_frame(w, h):
   return
 
 
+def all_points(w, h):
+  return product(range(w), range(h))
+
+
 def neighbours(p=(0, 0), borders=None, diagonals=False, normal=True, labels=False):
   def within_borders(pt):
     if borders is None:
       return True
+    elif isinstance(borders, tuple):
+      x_n, y_n = pt
+      w, h = borders
+      return 0 <= y_n < h and 0 <= x_n < w
     elif isinstance(borders, dict):
       return pt in borders
     elif isinstance(borders, set):
