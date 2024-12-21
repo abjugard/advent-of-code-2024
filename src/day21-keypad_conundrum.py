@@ -4,22 +4,15 @@ from santas_little_helpers import day, get_data, timed
 
 today = day(2024, 21)
 
-numpad = {'7': Point(0, 0),
-          '8': Point(1, 0),
-          '9': Point(2, 0),
-          '4': Point(0, 1),
-          '5': Point(1, 1),
-          '6': Point(2, 1),
-          '1': Point(0, 2),
-          '2': Point(1, 2),
-          '3': Point(2, 2),
-          '0': Point(1, 3),
-          'A': Point(2, 3)}
-dirpad = {'^': Point(1, 0),
-          'A': Point(2, 0),
-          '<': Point(0, 1),
-          'v': Point(1, 1),
-          '>': Point(2, 1)}
+def make_pad(pad_keys):
+  return {
+    key: Point(x, y)
+    for y, ks in enumerate(pad_keys)
+    for x, key in enumerate(ks)
+  }
+
+numpad = make_pad(['789', '456', '123', '.0A'])
+dirpad = make_pad(['.^A', '<v>'])
 
 
 def generic_mover(d):
