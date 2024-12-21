@@ -28,7 +28,7 @@ def generic_mover(d):
 
 def dirpad_mover(sequence):    #     +---+---+
   p = dirpad['A']              #     | ^ | A |
-  for c in sequence + 'A':     # +---+---+---+
+  for c in sequence:           # +---+---+---+
     target = dirpad[c]         # | < | v | > |
     d = target - p             # +---+---+---+
 
@@ -62,7 +62,7 @@ def expand_sequences(sequences, move_func):
   new_sequences = defaultdict(int)
   for seq, orig_count in sequences.items():
     for n_seq, count in Counter(move_func(seq)).items():
-      new_sequences[n_seq] += count * orig_count
+      new_sequences[n_seq + 'A'] += count * orig_count
   return new_sequences
 
 
@@ -71,16 +71,14 @@ def handle_code(code, bots):
   for i in range(1, max(bots) + 1):
     sequences = expand_sequences(sequences, dirpad_mover)
     if i in bots:
-      yield sum((len(seq) + 1) * n for seq, n in sequences.items()) * int(code[:-1])
+      yield sum(len(seq) * n for seq, n in sequences.items()) * int(code[:-1])
 
 
 def find_complexities(data, bots):
-  c1 = c2 = 0
+  c = Point()
   for code in data:
-    p1, p2 = list(handle_code(code, bots))
-    c1 += p1
-    c2 += p2
-  return c1, c2
+    c += tuple(handle_code(code, bots))
+  return c.t
 
 
 def main():
